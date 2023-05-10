@@ -24,7 +24,7 @@ export default component$(() => {
   return (
     <div class="grid gap-8 p-8">
       <h1 class="text-4xl">Todo List</h1>
-      <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {todos.value.map((todo) => (
           <TodoCard
             todo={todo}

@@ -36,7 +36,11 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
   });
 
   return (
-    <div class="bg-white shadow-xl p-4 grid rounded-md divide-y divide-dashed divide-slate-400">
+    <div
+      class={`bg-white shadow-xl p-4 grid rounded-md divide-y divide-dashed divide-slate-400 ${
+        todo.done && "shadow-none border-dashed border-slate-400 border-2"
+      }`}
+    >
       <span class={`pb-4 text-lg ${todo.done && "line-through"}`}>
         Todo #{todo.id}
       </span>
