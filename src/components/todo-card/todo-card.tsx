@@ -1,5 +1,6 @@
 import { $, component$ } from "@builder.io/qwik";
 import type { PropFunction } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
 import type { Todo } from "~/models/todo";
 
 interface Props {
@@ -48,6 +49,14 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
         {todo.description}
       </span>
       <div class="pt-4 flex flex-row justify-end gap-4">
+        {!todo.done && (
+          <Link
+            href={`/todos/${todo.id}`}
+            class={`px-3 py-2 rounded-md text-white text-sm bg-purple-600`}
+          >
+            Edit
+          </Link>
+        )}
         <button
           class={`px-3 py-2 rounded-md text-white text-sm ${
             todo.done ? "bg-cyan-600" : "bg-emerald-600"
