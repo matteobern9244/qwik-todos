@@ -1,65 +1,76 @@
 import { $, component$, useSignal } from "@builder.io/qwik";
-import { Link, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import {
+  Link,
+  routeAction$,
+  routeLoader$,
+  z,
+  zod$,
+} from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { TodoCard } from "~/components/todo-card/todo-card";
+import prismaClient from "~/lib/prismaClient";
 import type { Todo } from "~/models/todo";
 
-export const useTodos = routeLoader$(async ({ fail, env }) => {
-  const data = await fetch(`${env.get("API_URL")}/notes`);
-  if (!data) {
-    // Return a failed value to indicate that product was not found
-    return fail(404, {
-      todos: [] as Todo[],
+export const useTodos = routeLoader$(async () => {
+  const todos = await prismaClient.todo.findMany();
+  return todos;
+});
+
+export const useDeleteTodo = routeAction$(
+  async ({ id }) => {
+    const deleted = await prismaClient.todo.delete({
+      where: {
+        id,
+      },
     });
-  }
-  const todos = (await data.json()) as Todo[];
-  return {
-    todos,
-  };
-});
+    return deleted;
+  },
+  zod$({
+    id: z.string(),
+  })
+);
 
-export const useDeleteTodo = routeAction$(async ({ id }, { env }) => {
-  const deleted = await fetch(`${env.get("API_URL")}/notes/${id}`, {
-    method: "DELETE",
-  });
-  return deleted.json();
-});
-
-export const useToggleDone = routeAction$(async ({ id, done }, { env }) => {
-  const updated = await fetch(`${env.get("API_URL")}/notes/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify({
-      done: done,
-    }),
-    headers: {
-      "Content-type": "application/json",
-    },
-  });
-  return updated.json();
-});
+export const useToggleDone = routeAction$(
+  async ({ id, done }) => {
+    const updated = await prismaClient.todo.update({
+      data: {
+        done,
+      },
+      where: {
+        id,
+      },
+    });
+    return updated;
+  },
+  zod$({
+    id: z.string(),
+    done: z.boolean(),
+  })
+);
 
 export default component$(() => {
   const todosAction = useTodos();
-  const todos = useSignal(todosAction.value);
-  const deleteAction = useDeleteTodo();
+  const deleteTodoAction = useDeleteTodo();
+  const todos = useSignal<Todo[]>(todosAction.value as unknown as Todo[]);
   const toggleDoneAction = useToggleDone();
 
   const onDelete$ = $(async (id: string) => {
-    const deleted = await deleteAction.submit({ id });
-    if (deleted.status === 200) {
-      todos.value.todos = todos.value.todos.filter((todo) => todo._id !== id);
+    const deleted = await deleteTodoAction.submit({ id });
+    console.log(deleted);
+    if (deleted) {
+      todos.value = todos.value.filter((todo) => todo.id !== id);
     }
   });
 
   const onUpdate$ = $(async (todo: Todo) => {
     const response = await toggleDoneAction.submit({
-      id: todo._id,
+      id: todo.id,
       done: todo.done,
     });
     if (response.status === 200) {
-      const updated = response.value as Todo;
-      todos.value.todos = todos.value.todos.map((todo) =>
-        todo._id === updated._id ? updated : todo
+      const updated = response.value as unknown as Todo;
+      todos.value = todos.value.map((todo) =>
+        todo.id === updated.id ? updated : todo
       );
     }
   });
@@ -76,10 +87,10 @@ export default component$(() => {
         </Link>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {todos.value.todos.map((todo) => (
+        {todos.value.map((todo) => (
           <TodoCard
             todo={todo}
-            key={todo._id}
+            key={todo.id}
             onDelete$={(id: string) => onDelete$(id)}
             onUpdate$={(todo: Todo) => onUpdate$(todo)}
           />

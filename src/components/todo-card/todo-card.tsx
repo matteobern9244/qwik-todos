@@ -33,7 +33,7 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
       <div class="pt-4 flex flex-row justify-end gap-4">
         {!todo.done && (
           <Link
-            href={`/todos/${todo._id}`}
+            href={`/todos/${todo.id}`}
             class={`px-3 py-2 rounded-md text-black text-sm bg-yellow-400`}
           >
             Edit
@@ -49,7 +49,7 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
         </button>
         <button
           class="px-3 py-2 rounded-md text-white text-sm bg-rose-600"
-          onClick$={() => onDelete$(todo._id)}
+          onClick$={() => onDelete$(todo.id)}
         >
           Delete
         </button>
