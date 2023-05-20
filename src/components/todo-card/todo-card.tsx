@@ -5,35 +5,17 @@ import type { Todo } from "~/models/todo";
 
 interface Props {
   todo: Todo;
-  onDelete$: PropFunction<(id: number) => void>;
+  onDelete$: PropFunction<(id: string) => void>;
   onUpdate$: PropFunction<(todo: Todo) => void>;
 }
 
 export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
-  const deleteNote = $(async (id: number) => {
-    const deleted = await fetch(`http://localhost:3000/todos/${id}`, {
-      method: "DELETE",
-    });
-    if (deleted) {
-      onDelete$(id);
-    }
-  });
   const toggleNoteStatus = $(async (update: Todo) => {
     const toUpdate: Todo = {
       ...update,
       done: !update.done,
     };
-    const requestOptions = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toUpdate),
-    };
-    const updated = await fetch(
-      `http://localhost:3000/todos/${update.id}`,
-      requestOptions
-    );
-    const newTodo = await updated.json();
-    onUpdate$(newTodo);
+    onUpdate$(toUpdate);
   });
 
   return (
@@ -43,7 +25,7 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
       }`}
     >
       <span class={`pb-4 text-lg ${todo.done && "line-through"}`}>
-        Todo #{todo.id}
+        {todo.title}
       </span>
       <span class={`py-8 ${todo.done && "line-through"}`}>
         {todo.description}
@@ -51,15 +33,15 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
       <div class="pt-4 flex flex-row justify-end gap-4">
         {!todo.done && (
           <Link
-            href={`/todos/${todo.id}`}
-            class={`px-3 py-2 rounded-md text-white text-sm bg-purple-600`}
+            href={`/todos/${todo._id}`}
+            class={`px-3 py-2 rounded-md text-black text-sm bg-yellow-400`}
           >
             Edit
           </Link>
         )}
         <button
           class={`px-3 py-2 rounded-md text-white text-sm ${
-            todo.done ? "bg-cyan-600" : "bg-emerald-600"
+            todo.done ? "bg-indigo-600" : "bg-emerald-600"
           }`}
           onClick$={() => toggleNoteStatus(todo)}
         >
@@ -67,7 +49,7 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
         </button>
         <button
           class="px-3 py-2 rounded-md text-white text-sm bg-rose-600"
-          onClick$={() => deleteNote(todo.id)}
+          onClick$={() => onDelete$(todo._id)}
         >
           Delete
         </button>
