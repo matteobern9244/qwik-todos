@@ -5,7 +5,7 @@ import type { Todo } from "~/models/todo";
 
 interface Props {
   todo: Todo;
-  onDelete$: PropFunction<(id: string) => void>;
+  onDelete$: PropFunction<(id: number) => void>;
   onUpdate$: PropFunction<(todo: Todo) => void>;
 }
 

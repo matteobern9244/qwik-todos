@@ -2,15 +2,14 @@ import { component$ } from "@builder.io/qwik";
 import { Form, z, zod$ } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeAction$ } from "@builder.io/qwik-city";
-import prismaClient from "~/lib/prismaClient";
+import { supabaseClient } from "~/lib/supabase";
 
 export const useAddTodo = routeAction$(
-  async (data) => {
-    const todo = await prismaClient.todo.create({
-      data: {
-        title: data.title,
-        description: data.title,
-      },
+  async (data, requestEv) => {
+    const supabase = supabaseClient(requestEv);
+    const { data: todo } = await supabase.from("todo").insert({
+      title: data.title,
+      description: data.title,
     });
     return todo;
   },

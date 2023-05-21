@@ -8,42 +8,40 @@ import {
 } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { TodoCard } from "~/components/todo-card/todo-card";
-import prismaClient from "~/lib/prismaClient";
+import { supabaseClient } from "~/lib/supabase";
 import type { Todo } from "~/models/todo";
 
-export const useTodos = routeLoader$(async () => {
-  const todos = await prismaClient.todo.findMany();
+export const useTodos = routeLoader$(async (requestEv) => {
+  const supabase = supabaseClient(requestEv);
+  const { data: todos } = await supabase.from("todo").select("*");
   return todos;
 });
 
 export const useDeleteTodo = routeAction$(
-  async ({ id }) => {
-    const deleted = await prismaClient.todo.delete({
-      where: {
-        id,
-      },
-    });
-    return deleted;
+  async ({ id }, requestEv) => {
+    const supabase = supabaseClient(requestEv);
+    const response = await supabase.from("todo").delete().eq("id", id);
+    return response;
   },
   zod$({
-    id: z.string(),
+    id: z.number(),
   })
 );
 
 export const useToggleDone = routeAction$(
-  async ({ id, done }) => {
-    const updated = await prismaClient.todo.update({
-      data: {
+  async ({ id, done }, requestEv) => {
+    const supabase = supabaseClient(requestEv);
+    const response = await supabase
+      .from("todo")
+      .update({
         done,
-      },
-      where: {
-        id,
-      },
-    });
-    return updated;
+      })
+      .eq("id", id)
+      .select();
+    return response;
   },
   zod$({
-    id: z.string(),
+    id: z.number(),
     done: z.boolean(),
   })
 );
@@ -51,24 +49,23 @@ export const useToggleDone = routeAction$(
 export default component$(() => {
   const todosAction = useTodos();
   const deleteTodoAction = useDeleteTodo();
-  const todos = useSignal<Todo[]>(todosAction.value as unknown as Todo[]);
+  const todos = useSignal<Todo[]>(todosAction.value as Todo[]);
   const toggleDoneAction = useToggleDone();
 
-  const onDelete$ = $(async (id: string) => {
-    const deleted = await deleteTodoAction.submit({ id });
-    console.log(deleted);
-    if (deleted) {
+  const onDelete$ = $(async (id: number) => {
+    const { value: response } = await deleteTodoAction.submit({ id });
+    if (response.status === 204) {
       todos.value = todos.value.filter((todo) => todo.id !== id);
     }
   });
 
   const onUpdate$ = $(async (todo: Todo) => {
-    const response = await toggleDoneAction.submit({
+    const { value: response } = await toggleDoneAction.submit({
       id: todo.id,
       done: todo.done,
     });
     if (response.status === 200) {
-      const updated = response.value as unknown as Todo;
+      const updated = response?.data?.[0] as Todo;
       todos.value = todos.value.map((todo) =>
         todo.id === updated.id ? updated : todo
       );
@@ -91,8 +88,8 @@ export default component$(() => {
           <TodoCard
             todo={todo}
             key={todo.id}
-            onDelete$={(id: string) => onDelete$(id)}
-            onUpdate$={(todo: Todo) => onUpdate$(todo)}
+            onDelete$={(id) => onDelete$(id)}
+            onUpdate$={(todo) => onUpdate$(todo)}
           />
         ))}
       </div>
