@@ -20,17 +20,19 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
 
   return (
     <div
-      class={`bg-white shadow-xl p-4 grid rounded-md divide-y divide-dashed divide-slate-400 ${
-        todo.done && "shadow-none border-dashed border-slate-400 border-2"
+      class={`card bg-base-300 p-4 grid rounded-md ${
+        todo.done
+          ? "shadow-none border-dashed border-slate-400 border-2"
+          : "shadow-xl"
       }`}
     >
-      <span class={`pb-4 text-lg ${todo.done && "line-through"}`}>
+      <span class={`pb-4 text-2xl ${todo.done && "line-through"}`}>
         {todo.title}
       </span>
-      <span class={`py-8 ${todo.done && "line-through"}`}>
+      <span class={`py-4 ${todo.done && "line-through"}`}>
         {todo.description}
       </span>
-      <div class="pt-4 flex flex-row justify-end gap-4">
+      <div class="pt-4 flex flex-row justify-end gap-4 border-t border-slate-200">
         {!todo.done && (
           <Link
             href={`/todos/${todo.id}`}

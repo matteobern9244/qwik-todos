@@ -1,40 +1,97 @@
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { $, component$ } from "@builder.io/qwik";
+import { z } from "@builder.io/qwik-city";
+import { zodForm$ } from "@modular-forms/qwik";
+import { useForm } from "@modular-forms/qwik";
+import type { Signal } from "@builder.io/qwik";
 import type { PropFunction } from "@builder.io/qwik";
-import type { Todo } from "~/models/todo";
+import type { Maybe, SubmitHandler } from "@modular-forms/qwik";
 
 interface Props {
-  todo?: Todo;
+  todo: Readonly<
+    Signal<{
+      title: Maybe<string>;
+      description: Maybe<string>;
+    }>
+  >;
   onSubmit$: PropFunction<(title: string, description: string) => void>;
   actionName: string;
 }
 
-const inputStyle =
-  "mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500";
+const todoSchema = z.object({
+  title: z.string().min(1, "Please enter a title."),
+  description: z.string().min(1, "Please enter a description."),
+});
+
+export type TodoForm = z.infer<typeof todoSchema>;
+
+const inputStyle = "input input-bordered w-full";
 
 export const TodoEditor = component$(
   ({ todo, onSubmit$, actionName }: Props) => {
-    const title = useSignal<string>("");
-    const description = useSignal<string>("");
+    const [, { Form, Field }] = useForm<TodoForm>({
+      loader: todo,
+      validate: zodForm$(todoSchema),
+    });
 
-    useTask$(async () => {
-      title.value = todo?.title ?? "";
-      description.value = todo?.description ?? "";
+    const handleSubmit: SubmitHandler<TodoForm> = $((values) => {
+      onSubmit$(values.title, values.description);
     });
 
     return (
-      <form class="flex flex-col gap-2 my-4" preventdefault:submit>
-        <label for="title">Title</label>
-        <input name="title" class={inputStyle} bind:value={title} />
-        <label for="description">Description</label>
-        <input name="description" class={inputStyle} bind:value={description} />
+      // I need this, but i dunno why
+      // eslint-disable-next-line qwik/valid-lexical-scope
+      <Form onSubmit$={handleSubmit} class="flex flex-col gap-4 mt-8">
+        <Field name="title">
+          {(field, props) => (
+            <div>
+              <label class="label">
+                <span class="label-text">Title</span>
+              </label>
+              <input
+                {...props}
+                type="text"
+                value={field.value}
+                class={`${inputStyle} ${
+                  field.error ? "input-error" : "input-info"
+                }`}
+              />
+              {field.error && (
+                <div class="alert alert-error shadow-sm mt-2">
+                  <span>{field.error}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </Field>
+        <Field name="description">
+          {(field, props) => (
+            <div>
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <input
+                {...props}
+                type="text"
+                value={field.value}
+                class={`${inputStyle} ${
+                  field.error ? "input-error" : "input-info"
+                }`}
+              />
+              {field.error && (
+                <div class="alert alert-error shadow-sm mt-2">
+                  <span>{field.error}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </Field>
         <button
           type="submit"
           class="py-2 px-4 bg-sky-600 rounded-md text-white mt-8"
-          onClick$={() => onSubmit$(title.value, description.value)}
         >
           {actionName}
         </button>
-      </form>
+      </Form>
     );
   }
 );

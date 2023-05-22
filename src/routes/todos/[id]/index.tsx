@@ -2,18 +2,26 @@ import { component$ } from "@builder.io/qwik";
 import { routeAction$, routeLoader$, z, zod$ } from "@builder.io/qwik-city";
 import { TodoEditor } from "~/components/todo-editor/todo-editor";
 import { supabaseClient } from "~/lib/supabase";
+import type { InitialValues } from "@modular-forms/qwik";
+import type { TodoForm } from "~/components/todo-editor/todo-editor";
 import type { Todo } from "~/models/todo";
 
-export const useTodo = routeLoader$(async (requestEv) => {
-  const { id } = requestEv.params;
-  const { redirect } = requestEv;
-  const supabase = supabaseClient(requestEv);
-  const response = await supabase.from("todo").select().eq("id", id);
-  if (response.status === 404) {
-    redirect(304, "/");
+export const useFormLoader = routeLoader$<InitialValues<TodoForm>>(
+  async (requestEv) => {
+    const { id } = requestEv.params;
+    const { redirect } = requestEv;
+    const supabase = supabaseClient(requestEv);
+    const response = await supabase.from("todo").select().eq("id", id);
+    if (response.status === 404) {
+      redirect(304, "/");
+    }
+    const todo = response.data?.[0] as Todo;
+    return {
+      title: todo.title,
+      description: todo.description,
+    };
   }
-  return response;
-});
+);
 
 export const useEditTodo = routeAction$(
   async (data, requestEv) => {
@@ -35,13 +43,13 @@ export const useEditTodo = routeAction$(
 );
 
 export default component$(() => {
-  const { value: todo } = useTodo();
+  const todo = useFormLoader();
   const action = useEditTodo();
   return (
     <div>
       <h1 class="text-4xl">Edit Todo</h1>
       <TodoEditor
-        todo={todo.data?.[0] as Todo}
+        todo={todo}
         actionName="Edit"
         onSubmit$={(title, description) => {
           action.submit({

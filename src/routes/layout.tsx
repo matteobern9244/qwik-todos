@@ -10,15 +10,15 @@ export default component$(() => {
           <div class="progress-bar-value"></div>
         </div>
       )}
-      <div class="flex bg-slate-200 flex-row gap-2 align-middle p-4 shadow-md">
+      <div class="bg-base-300 flex flex-row gap-2 align-middle p-4 shadow-md">
         <Link
-          class="bg-slate-300 hover:bg-slate-400 py-2 px-4 rounded-md"
+          class="bg-base-100 hover:bg-base-200 py-2 px-4 rounded-md"
           href="/"
         >
           Home
         </Link>
         <Link
-          class="bg-slate-300 hover:bg-slate-400 py-2 px-4 rounded-md"
+          class="bg-base-100 hover:bg-base-200 py-2 px-4 rounded-md"
           href="/todos"
         >
           Todos
