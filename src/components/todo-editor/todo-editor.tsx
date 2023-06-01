@@ -5,6 +5,7 @@ import { useForm } from "@modular-forms/qwik";
 import type { Signal } from "@builder.io/qwik";
 import type { PropFunction } from "@builder.io/qwik";
 import type { Maybe, SubmitHandler } from "@modular-forms/qwik";
+import { LuPencil, LuPlus } from "@qwikest/icons/lucide";
 
 interface Props {
   todo: Readonly<
@@ -14,7 +15,7 @@ interface Props {
     }>
   >;
   onSubmit$: PropFunction<(title: string, description: string) => void>;
-  actionName: string;
+  actionName: "Create" | "Edit";
 }
 
 const todoSchema = z.object({
@@ -87,8 +88,9 @@ export const TodoEditor = component$(
         </Field>
         <button
           type="submit"
-          class="py-2 px-4 bg-sky-600 rounded-md text-white mt-8"
+          class="flex items-center justify-center gap-3 py-2 px-4 bg-sky-600 rounded-md text-white mt-8"
         >
+          {actionName === "Create" ? <LuPlus /> : <LuPencil />}
           {actionName}
         </button>
       </Form>

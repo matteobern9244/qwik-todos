@@ -2,6 +2,12 @@ import { $, component$ } from "@builder.io/qwik";
 import type { PropFunction } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 import type { Todo } from "~/models/todo";
+import {
+  LuArchiveRestore,
+  LuCheckCircle,
+  LuPencil,
+} from "@qwikest/icons/lucide";
+import { LuTrash2 } from "@qwikest/icons/lucide";
 
 interface Props {
   todo: Todo;
@@ -21,9 +27,7 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
   return (
     <div
       class={`card bg-base-300 p-4 grid rounded-md ${
-        todo.done
-          ? "shadow-none border-dashed border-slate-400 border-2"
-          : "shadow-xl"
+        todo.done ? "shadow-none" : "shadow-xl"
       }`}
     >
       <span class={`pb-4 text-2xl ${todo.done && "line-through"}`}>
@@ -36,23 +40,26 @@ export const TodoCard = component$(({ todo, onDelete$, onUpdate$ }: Props) => {
         {!todo.done && (
           <Link
             href={`/todos/${todo.id}`}
-            class={`px-3 py-2 rounded-md text-black text-sm bg-yellow-400`}
+            class={`flex items-center gap-2 px-3 py-2 rounded-md text-black text-sm bg-yellow-400`}
           >
+            <LuPencil />
             Edit
           </Link>
         )}
         <button
-          class={`px-3 py-2 rounded-md text-white text-sm ${
+          class={`flex items-center gap-2 px-3 py-2 rounded-md text-white text-sm ${
             todo.done ? "bg-indigo-600" : "bg-emerald-600"
           }`}
           onClick$={() => toggleNoteStatus(todo)}
         >
+          {todo.done ? <LuArchiveRestore /> : <LuCheckCircle />}
           {todo.done ? "Restore" : "Done"}
         </button>
         <button
-          class="px-3 py-2 rounded-md text-white text-sm bg-rose-600"
+          class="flex items-center gap-2 px-3 py-2 rounded-md text-white text-sm bg-rose-600"
           onClick$={() => onDelete$(todo.id)}
         >
+          <LuTrash2 />
           Delete
         </button>
       </div>

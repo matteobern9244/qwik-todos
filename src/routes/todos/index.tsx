@@ -7,6 +7,7 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import { LuPlusCircle } from "@qwikest/icons/lucide";
 import { TodoCard } from "~/components/todo-card/todo-card";
 import { supabaseClient } from "~/lib/supabase";
 import type { Todo } from "~/models/todo";
@@ -78,8 +79,9 @@ export default component$(() => {
         <h1 class="text-4xl">Todo List</h1>
         <Link
           href={`/todos/new`}
-          class={`px-3 py-2 rounded-md text-white text-sm bg-sky-600`}
+          class={`flex items-center gap-2 px-3 py-2 rounded-md text-white text-sm bg-sky-600`}
         >
+          <LuPlusCircle />
           Add Todo
         </Link>
       </div>
