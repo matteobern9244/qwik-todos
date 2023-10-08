@@ -37,7 +37,7 @@ jobs:
               'Content-Type': 'application/json',
               'Authorization': 'Basic ' + Buffer.from('mbernardini:' + JIRA_API_TOKEN).toString('base64')
             },
-            body: JSON.stringify({ name: TAG_NAME })
+            body: JSON.stringify({ "description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": true,"releaseDate": "2010-07-06","project": "QWTEST","projectId": 10001 })
           })
           .then(response => response.json())
           .then(data => {
