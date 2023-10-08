@@ -26,10 +26,14 @@ jobs:
           echo ${{ env.RELEASE_VERSION }}
 
       - name: Set current date as env variable for userReleaseDate
-        run: echo "NOW_USER=$(date +'%d/%mmm/%Y')" >> $GITHUB_ENV
+        run: |
+          echo "NOW_USER=$(date +'%d/%MMM/%YY')" >> $GITHUB_ENV
+          echo ${{ env.NOW_USER }}
 
       - name: Set current date as env variable for releaseDate
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: |
+          echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo ${{ env.NOW }}
 
       - name: Crea Release su Jira
         run: |
