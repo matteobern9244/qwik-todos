@@ -5,6 +5,10 @@ on:
     tags:
       - '*'
 
+env:
+  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,13 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Show env
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+
       - name: Crea Release su Jira
         run: |
-          TAG_NAME=$(git describe --tags --abbrev=0)
-          echo TAG_NAME
-
-          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
-          echo JIRA_API_TOKEN
-
           # Eseguire la richiesta API per creare una release su Jira
-          curl -D- -u "username:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "An excellent version","name": "New Version 1","archived": false,"released": true,"releaseDate": "2010-07-06","project": "QWIK","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
+          curl -D- -u "username:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": true,"releaseDate": "2010-07-06","project": "QWIK","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
