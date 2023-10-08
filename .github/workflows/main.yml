@@ -31,8 +31,8 @@ jobs:
         run: echo "::set-output name=date::$(LC_TIME=it_IT.UTF-8 date +'%-d/%b/%y')"
 
       - name: Visualizza data
-      run: echo "La data è ${{ steps.set_date.outputs.date }}"
-
+        run: echo "La data è ${{ steps.set_date.outputs.date }}"
+      
       - name: Show env
         run: |
           echo $RELEASE_VERSION
