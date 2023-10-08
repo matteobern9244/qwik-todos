@@ -30,7 +30,7 @@ jobs:
         id: t1
         uses: Kaven-Universe/github-action-current-date-time@v1
         with:
-          format: "d/MMM/yy"
+          format: "d/MM/yy"
 
       # Use the output from the `t1` step
       - name: Output1
