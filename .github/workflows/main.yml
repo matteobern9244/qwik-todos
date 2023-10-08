@@ -45,4 +45,4 @@ jobs:
       - name: Crea Release su Jira
         run: |
           # Eseguire la richiesta API per creare una release su Jira
-          curl -D- -u "matteobern92@hotmail.com:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": false,"userReleaseDate": "${{ steps.set_date.outputs.date }}","project": "QWTEST","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
+          curl -D- -u "matteobern92@hotmail.com:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": false,"userStartDate": "${{ steps.set_date.outputs.date }}","project": "QWTEST","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
