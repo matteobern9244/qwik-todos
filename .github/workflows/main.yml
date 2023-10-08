@@ -48,7 +48,7 @@ jobs:
           echo "The milliseconds_since_epoch was ${{ steps.t1.outputs.milliseconds_since_epoch }}"
 
       - name: Set current date as env variable for userReleaseDate
-          run: echo "NOW_USER=${{ steps.t1.outputs.day }}/${{ steps.t1.outputs.month }}/${{ steps.t1.outputs.year }}" >> $GITHUB_ENV
+        run: echo "NOW_USER=${{ steps.t1.outputs.day }}/${{ steps.t1.outputs.month }}/${{ steps.t1.outputs.year }}" >> $GITHUB_ENV
 
       - name: Show env
         run: |
