@@ -21,7 +21,7 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Set current date as env variable for userReleaseDate
-        run: echo "NOW_USER=$(date +'%-d/%b/%y')" >> $GITHUB_ENV
+        run: echo "NOW_USER=$(date +'%-d/%b/%y' --date='TZ="Europe/Rome"')" >> $GITHUB_ENV
 
       - name: Set current date as env variable for releaseDate
         run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
