@@ -20,11 +20,35 @@ jobs:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Set current date as env variable for userReleaseDate
-        run: echo "NOW_USER=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
+      #- name: Set current date as env variable for userReleaseDate
+        #run: echo "NOW_USER=$(date +'%d/%m/%Y')" >> $GITHUB_ENV
 
-      - name: Set current date as env variable for releaseDate
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      #- name: Set current date as env variable for releaseDate
+        #run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Test1
+        id: t1
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "d/MMM/yy"
+
+      # Use the output from the `t1` step
+      - name: Output1
+        run: |
+          echo "The time was ${{ steps.t1.outputs.time }}"
+          echo "The year was ${{ steps.t1.outputs.year }}"
+          echo "The month was ${{ steps.t1.outputs.month }}"
+          echo "The day was ${{ steps.t1.outputs.day }}"
+          echo "The hours was ${{ steps.t1.outputs.hours }}"
+          echo "The minutes was ${{ steps.t1.outputs.minutes }}"
+          echo "The seconds was ${{ steps.t1.outputs.seconds }}"
+          echo "The milliseconds was ${{ steps.t1.outputs.milliseconds }}"
+          echo "The day_of_week was ${{ steps.t1.outputs.day_of_week }}"
+          echo "The week_of_year was ${{ steps.t1.outputs.week_of_year }}"
+          echo "The milliseconds_since_epoch was ${{ steps.t1.outputs.milliseconds_since_epoch }}"
+
+      - name: Set current date as env variable for userReleaseDate
+          run: echo "NOW_USER=${{ steps.t1.outputs.day }}/${{ steps.t1.outputs.month }}/${{ steps.t1.outputs.year }}" >> $GITHUB_ENV
 
       - name: Show env
         run: |
