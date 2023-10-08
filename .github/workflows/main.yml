@@ -8,11 +8,9 @@ on:
 env:
   JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
   
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Setta lingua italiana
         run: |
