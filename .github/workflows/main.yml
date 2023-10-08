@@ -14,17 +14,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setta lingua italiana
+      run: |
+        sudo apt-get install -y locales
+        sudo locale-gen it_IT.UTF-8
+        sudo update-locale LANG=it_IT.UTF-8
+        export LANG=it_IT.UTF-8
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Set current date as env variable for userReleaseDate
-        run: echo "NOW_USER=$(date +'%-d/%b/%y' --date='TZ="Europe/Rome"')" >> $GITHUB_ENV
+      - name: Imposta data nel formato d/MMM/yy
+        id: set_date
+        run: echo "::set-output name=date::$(LC_TIME=it_IT.UTF-8 date +'%-d/%b/%y')"
 
-      - name: Set current date as env variable for releaseDate
-        run: echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Visualizza data
+      run: echo "La data è ${{ steps.set_date.outputs.date }}"
 
       - name: Show env
         run: |
@@ -38,4 +46,4 @@ jobs:
       - name: Crea Release su Jira
         run: |
           # Eseguire la richiesta API per creare una release su Jira
-          curl -D- -u "matteobern92@hotmail.com:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": false,"userReleaseDate": "${{ env.NOW_USER }}","project": "QWTEST","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
+          curl -D- -u "matteobern92@hotmail.com:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "${{ env.RELEASE_VERSION }}","name": "${{ env.RELEASE_VERSION }}","archived": false,"released": false,"userReleaseDate": "${{ steps.set_date.outputs.date }}","project": "QWTEST","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
