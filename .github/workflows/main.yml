@@ -26,27 +26,25 @@ jobs:
           echo "Creando release su Jira..."
 
           node - <<EOF
-          const axios = require('axios').default;
+          const fetch = require('node-fetch');
 
           const TAG_NAME = process.env.TAG_NAME;
           const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 
-          axios.post('https://mbernardini.atlassian.net/rest/api/2/version', {
-            name: TAG_NAME
-          }, {
-            auth: {
-              username: 'username',
-              password: JIRA_API_TOKEN
-            },
+          fetch('https://mbernardini.atlassian.net/rest/api/2/version', {
+            method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
-            }
+              'Content-Type': 'application/json',
+              'Authorization': 'Basic ' + Buffer.from('mbernardini:' + JIRA_API_TOKEN).toString('base64')
+            },
+            body: JSON.stringify({ name: TAG_NAME })
           })
-          .then(response => {
-            console.log('Release creata con successo su Jira:', response.data);
+          .then(response => response.json())
+          .then(data => {
+            console.log('Release creata con successo su Jira:', data);
           })
           .catch(error => {
-            console.error('Errore durante la creazione della release su Jira:', error.response.data);
+            console.error('Errore durante la creazione della release su Jira:', error);
             process.exit(1);
           });
           EOF
