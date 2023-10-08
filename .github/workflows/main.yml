@@ -15,11 +15,11 @@ jobs:
 
     steps:
       - name: Setta lingua italiana
-      run: |
-        sudo apt-get install -y locales
-        sudo locale-gen it_IT.UTF-8
-        sudo update-locale LANG=it_IT.UTF-8
-        export LANG=it_IT.UTF-8
+        run: |
+          sudo apt-get install -y locales
+          sudo locale-gen it_IT.UTF-8
+          sudo update-locale LANG=it_IT.UTF-8
+          export LANG=it_IT.UTF-8
 
       - name: Checkout repository
         uses: actions/checkout@v2
