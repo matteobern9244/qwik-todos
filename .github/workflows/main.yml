@@ -16,7 +16,10 @@ jobs:
       - name: Crea Release su Jira
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0)
-          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+          echo TAG_NAME
 
+          JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}
+          echo JIRA_API_TOKEN
+          
           # Eseguire la richiesta API per creare una release su Jira
-          curl -D- -u "username:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"name": "'"${TAG_NAME}"'", "releaseDate": "${{ steps.date.outputs.date }}","description": "Version created by github actions","archived": false,"released": true,"releaseDate": "${{ steps.date.outputs.date }}","project": "QWIK","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
+          curl -D- -u "username:${JIRA_API_TOKEN}" -X POST -H "Content-Type: application/json" --data '{"description": "An excellent version","name": "New Version 1","archived": false,"released": true,"releaseDate": "2010-07-06","userReleaseDate": "6/Jul/2010","project": "QWIK","projectId": 10001}' https://mbernardini.atlassian.net/rest/api/2/version
